@@ -6,10 +6,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens;
-
-class User extends Authenticatable
+use App\Models\UserDepartmentJobMap;
+class User extends Authenticatable implements JWTSubject
 {
+    
+
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
@@ -21,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'birthdate'
     ];
 
     /**
@@ -42,4 +46,28 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function roles()
+    {
+        return $this->hasOne(UserRoleDepartmentMap::class, 'user_id', 'id');
+    }
+
+    public function jobs()
+    {
+        return $this->hasOne(UserJobDepartmentMap::class, 'user_id', 'id');
+    }
+    
+
+    public function userRoleDepartmentMap()
+    {
+        return $this->hasOne(UserRoleDepartmentMap::class,'user_id','id');
+    }
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
