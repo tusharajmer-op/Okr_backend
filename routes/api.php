@@ -7,7 +7,10 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\ServiceControllers\TimePeriodController;
+use App\Http\Controllers\ServiceControllers\TagController;
+use App\Http\Controllers\ServiceControllers\OkrCategoryController;
+use App\Http\Controllers\Objectives\ObjectController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,66 +27,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/login','App\Http\Controllers\loginSignUpController@login');
-Route::middleware(['token','check.admin'])->group(function () {
-    Route::group(['prefix' => 'department'], function () {
-        Route::controller(DepartmentController::class)->group(function () {
-
-            Route::post('/','store');
-            Route::put('/{id}','update');
-            Route::delete('/{id}','destroy');
-        });
-    });
-    Route::group(['prefix' => 'role'], function () {
-        Route::controller(RoleController::class)->group(function () {
-
-            Route::post('/','store');
-            Route::put('/{id}','update');
-            Route::delete('/{id}','destroy');
-        });
-    });
-    Route::group(['prefix' => 'job'], function () {
-        Route::controller(JobController::class)->group(function () {
-            Route::post('/','store');
-            Route::put('/{id}','update');
-            Route::delete('/{id}','destroy');
-        });
-    });
-    Route::group(['prefix' => 'user'], function () {
-        Route::controller(UserController::class)->group(function () {
-            Route::get('/','index');
-            Route::post('/','store');
-           
-            Route::delete('/{id}','destroy');
-        });
-    });
-    
+Route::middleware(['token', 'check.admin'])->group(function () {
+    Route::resource('department', DepartmentController::class);
+    Route::resource('role', RoleController::class);
+    Route::resource('job', JobController::class);
+    Route::resource('user', UserController::class);
+    Route::resource('tag', TagController::class);
+    Route::resource('okr-category', OkrCategoryController::class);
 });
-Route::middleware(['token'])->group(function () {
-    Route::group(['prefix' => 'user'], function () {
-        Route::controller(UserController::class)->group(function () {
-            
-            Route::get('/{id}','show');
-            Route::put('/{id}','update');
-        });
-    });
-    Route::group(['prefix' => 'role'], function () {
-        Route::controller(RoleController::class)->group(function () {
-            Route::get('/','index');
-            Route::get('/{id}','show');
-        });
-    });
-    Route::group(['prefix' => 'job'], function () {
-        Route::controller(JobController::class)->group(function () {
-            Route::get('/','index');
-            Route::get('/{id}','show');
-        });
-    });
-    Route::group(['prefix' => 'department'], function () {
-        Route::controller(DepartmentController::class)->group(function () {
-            Route::get('/','index');
-            Route::get('/{id}','show');
-        });
-    });
 
+Route::middleware(['token'])->group(function () {
+    Route::resource('user', UserController::class)->only(['show', 'update']);
+    Route::resource('role', RoleController::class)->only(['index', 'show']);
+    Route::resource('job', JobController::class)->only(['index', 'show']);
+    Route::resource('department', DepartmentController::class)->only(['index', 'show']);
+    Route::resource('time-period', TimePeriodController::class)->only(['index']);
+    Route::resource('tag', TagController::class)->only(['index']);
+    Route::resource('okr-category', OkrCategoryController::class)->only(['index']);
+    Route::resource('objects', ObjectController::class);
+    Route::get('/okr/my-okrs', [ObjectController::class, 'showMyObjects']);
+    Route::get('/okr/my-departments', [ObjectController::class, 'showDepartmentObjects']);
 });
 

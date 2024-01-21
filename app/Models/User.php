@@ -70,4 +70,16 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    public function userObjectOwnerMap()
+    {
+        return $this->hasMany(ObjectownerMapping::class,'user_id','id');
+    }
+    public function userObjectVisibilityMap()
+    {
+        return $this->hasMany(ObjectVisibilityListMapping::class,'user_id','id');
+    }
+    public function userObjectCreatedByMap()
+    {
+        return $this->belongsTo(Objects::class,'user_id','id');
+    }
 }

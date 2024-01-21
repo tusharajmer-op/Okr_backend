@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminDepartmentSeeder::class);
         $this->call(AdminRoleSeeder::class);
         $this->call(AdminSeeder::class);
+        $this->call(TimePeriod::class);
     }
 }

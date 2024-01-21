@@ -22,4 +22,14 @@ class Department extends Model
     {
         return $this->hasMany(UserRoleDepartmentMap::class,'department_id');
     }
+    public function userObjectDepartmentMap()
+    
+    {
+        return $this->hasMany(ObjectDepartmentMapping::class,'department_id')->count();
+    }
+    public function userObjectDepartmentMap1()
+    
+    {
+        return $this->belongsToMany(ObjectDepartmentMapping::class,'department_id');
+    }
 }
