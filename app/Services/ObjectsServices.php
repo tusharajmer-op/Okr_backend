@@ -9,6 +9,7 @@ use App\Models\ObjectownerMapping;
 use App\Models\ObjectTagMapping;
 use App\Models\ObjectVisibilityListMapping;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\TextUI\XmlConfiguration\RenameForceCoversAnnotationAttribute;
 
 class ObjectsServices{
 
@@ -19,7 +20,22 @@ class ObjectsServices{
         $owners = $objective->ObjectownerMapping->map(function ($ownerMapping) {
             return $ownerMapping->objectOwnerList->name;
         })->implode(', ');
-        
+        // dd($objective->objectTimePeriodMapping);
+        $time_period = $objective->objectTimePeriodMapping ? $objective->objectTimePeriodMapping->year . ' ' . strtoupper($objective->objectTimePeriodMapping->quarter) : '';
+        switch($objective->objectTimePeriodMapping->quarter){
+            case 'q1':
+                $duration = 'Jan 1 - Mar 31'; 
+                break;
+            case 'q2':
+                $duration = 'Apr 1 - Jun 30'; 
+                break;
+            case 'q3':
+                $duration = 'Jul 1 - Sep 30'; 
+                break;
+            case 'q4':
+                    $duration = 'Oct 1 - Dec 31';
+                    break;
+        }
         $tags = $objective->ObjectTagMapping ? $objective->ObjectTagMapping->map(function ($tagMapping) {
             return $tagMapping->objectTagList->tag;
         })->implode(', ') : '';
@@ -36,6 +52,8 @@ class ObjectsServices{
             "department" => $objective ? $objective->objectDepartmentMappingList->name : null,
             "owners" => $owners,
             "tags" => $tags,
+            "time_period" => $time_period,
+            "duration" => $duration,
             "access_list" => $access_list,
             "created_by" => $objective->objectCreatedByMapping->name,
              
@@ -102,7 +120,7 @@ class ObjectsServices{
     }
 }
 public function showobjects(){
-    $objectives = Objects::with('objectCategoryMapping','objectDepartmentMapping','objectOwnerMapping','objectTagMapping','objectVisbilityListMapping')->get();
+    $objectives = Objects::with('objectCategoryMapping','objectDepartmentMapping','objectOwnerMapping','objectTagMapping','objectVisbilityListMapping','objectTimePeriodMapping')->get();
     $data = $this->formatObject($objectives);
     
     
@@ -121,15 +139,6 @@ public function showobjects(){
  public function showMyokrs($request){
     $objectives = Objects::with('objectCategoryMapping','objectDepartmentMapping','objectOwnerMapping','objectTagMapping','objectVisbilityListMapping')
     ->where('created_by',$request->user['user_id'])
-    ->orWhere('department_id',$request->user['department_id'])
-    ->orWhereHas('objectVisbilityListMapping', function ($query) use ($request) {
-        $query->where('user_id', $request->user['user_id'])
-        ->where('object_id', '=', DB::raw('objects.id'));
-    })
-    ->orWhereHas('objectOwnerMapping', function ($query) use ($request) {
-        $query->where('owner_id', $request->user['user_id'])
-        ->where('object_id', '=', DB::raw('objects.id'));
-    })
     ->get();
     $data = $this->formatObject($objectives);
     return response()->json(["message" => "", "data" => $data, "status" => 200]);
@@ -139,6 +148,16 @@ public function showMyDepartmentOkrs($request){
     ->where('department_id',$request->user['department_id'])
     ->get();
     $data = $this->formatObject($objectives);
+    return response()->json(["message" => "", "data" => $data, "status" => 200]);
+}
+public function showFollowedOkrs($object_id){
+    $data = [];
+    foreach($object_id as $id){
+        $objectives = Objects::with('objectCategoryMapping','objectDepartmentMapping','objectOwnerMapping','objectTagMapping','objectVisbilityListMapping')
+        ->where('id',$id->objective_id)
+        ->get();
+        $data[] = $this->formatObject($objectives);
+    }
     return response()->json(["message" => "", "data" => $data, "status" => 200]);
 }
 }

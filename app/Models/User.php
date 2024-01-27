@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserDepartmentJobMap;
+use App\Models\userFollowedOkrs;
 class User extends Authenticatable implements JWTSubject
 {
     
@@ -81,5 +82,12 @@ class User extends Authenticatable implements JWTSubject
     public function userObjectCreatedByMap()
     {
         return $this->belongsTo(Objects::class,'user_id','id');
+    }
+    public function userFollowedOkrs()
+    {
+        return $this->hasMany(userFollowedOkrs::class,'user_id','id');
+    }
+    public function ownerKeysMapping(){
+        return $this->hasMany(keystoowner::class,'owner_id','id');
     }
 }

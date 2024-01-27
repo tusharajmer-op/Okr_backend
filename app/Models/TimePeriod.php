@@ -12,6 +12,11 @@ class TimePeriod extends Model
     protected $fillable = ['year','quarter'];
     protected $hidden = ['created_at','updated_at'];
 
+    public function objectives()
+    {
+        return $this->hasMany(Objects::class,"id");
+    }
+
 
 
 

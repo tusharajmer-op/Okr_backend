@@ -11,6 +11,8 @@ use App\Http\Controllers\ServiceControllers\TimePeriodController;
 use App\Http\Controllers\ServiceControllers\TagController;
 use App\Http\Controllers\ServiceControllers\OkrCategoryController;
 use App\Http\Controllers\Objectives\ObjectController;
+use App\Http\Controllers\UserFollowedOkrsController;
+use App\Http\Controllers\KeysController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -47,5 +49,14 @@ Route::middleware(['token'])->group(function () {
     Route::resource('objects', ObjectController::class);
     Route::get('/okr/my-okrs', [ObjectController::class, 'showMyObjects']);
     Route::get('/okr/my-departments', [ObjectController::class, 'showDepartmentObjects']);
+    Route::get('/okr/followed-okr', [UserFollowedOkrsController::class, 'getUserFollowedOkrs']);
+    Route::post('/okr/followed-okr', [UserFollowedOkrsController::class, 'store']);
+    Route::delete('/okr/followed-okr/{userFollowedOkrs}', [UserFollowedOkrsController::class, 'destroy']);
+    Route::post('/keys', [KeysController::class, 'store']);
 });
 
+// key and sub key types 
+// check in frequency
+// cascade approach
+// Milestone Sequence
+// Milestone labels

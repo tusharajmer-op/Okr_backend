@@ -15,4 +15,8 @@ class Tags extends Model
     {
         return $this->hasMany(ObjectTagMapping::class, "tag_id", "id");
     }
+    public function keystotags()
+    {
+        return $this->hasMany(keystotags::class, "tag_id", "id");
+    }
 }

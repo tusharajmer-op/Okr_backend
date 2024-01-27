@@ -46,4 +46,12 @@ class Objects extends Model
     {
         return $this->hasOne(User::class, "id", "created_by");
     }
+    public function objectTimePeriodMapping()
+    {
+        return $this->belongsTo(TimePeriod::class, "id", "id");
+    }
+    public function objectKeyMapping()
+    {
+        return $this->hasMany(keysToObjects::class, "object_id", "id");
+    }
 }

@@ -5,17 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class keySubTypes extends Model
+class Milestone_Sequence_Templates extends Model
 {
     use HasFactory;
-    protected $table = "keysubtypes";
     protected $fillable = [
         'name',
-        'keytype_id',
     ];
-    public function keyType()
+    public function sequence()
     {
-        return $this->belongsTo(keyTypes::class);
+        return $this->hasMany(Milestone_Sequence_Table::class, 'id');
     }
-
 }

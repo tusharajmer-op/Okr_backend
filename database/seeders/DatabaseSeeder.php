@@ -22,5 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminRoleSeeder::class);
         $this->call(AdminSeeder::class);
         $this->call(TimePeriod::class);
+        $this->call(KeyTypesSeeder::class);
+        $this->call(KeySubTypesSeeder::class);
     }
 }

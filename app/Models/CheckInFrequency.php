@@ -5,17 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class keySubTypes extends Model
+class CheckInFrequency extends Model
 {
     use HasFactory;
-    protected $table = "keysubtypes";
+    protected $table = "check_in_frequencies";
     protected $fillable = [
         'name',
-        'keytype_id',
     ];
-    public function keyType()
-    {
-        return $this->belongsTo(keyTypes::class);
+    public function keystofrequencies(){
+        return $this->hasMany(keystofrequencies::class);
     }
-
+    
 }
