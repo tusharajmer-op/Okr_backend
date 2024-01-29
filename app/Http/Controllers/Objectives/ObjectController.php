@@ -27,13 +27,12 @@ class ObjectController extends Controller
     {
         $rules = [
             'name' => 'required',
-            'description' => 'required',
             'time_period' => 'required',
             'is_private' => 'required',
             'visibility' => 'required|in:myself,department,accesslist',
             'tags' => 'required',
             'category'=>'required',
-            'department'=>'required',
+            
            
         ];
         $validation = $this->validator->validateRequest($request,$rules);
@@ -41,7 +40,12 @@ class ObjectController extends Controller
             return response()->json($validation);
         }
         try{
+            // return response()->json($request);
             $objective = $this->objectService->storeObjects($request);
+            return response()->json($objective);
+            if($objective['status'] == 500){
+                return response()->json($objective);
+            }
             return response()->json($objective);
         }
         catch(\Exception $e){

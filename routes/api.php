@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('/login','App\Http\Controllers\loginSignUpController@login');
-Route::middleware(['token', 'check.admin'])->group(function () {
+Route::middleware(['token', 'check.admin','cors'])->group(function () {
     Route::resource('department', DepartmentController::class);
     Route::resource('role', RoleController::class);
     Route::resource('job', JobController::class);
@@ -38,7 +38,7 @@ Route::middleware(['token', 'check.admin'])->group(function () {
     Route::resource('okr-category', OkrCategoryController::class);
 });
 
-Route::middleware(['token'])->group(function () {
+Route::middleware(['token','cors'])->group(function () {
     Route::resource('user', UserController::class)->only(['show', 'update']);
     Route::resource('role', RoleController::class)->only(['index', 'show']);
     Route::resource('job', JobController::class)->only(['index', 'show']);

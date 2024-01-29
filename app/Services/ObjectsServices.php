@@ -22,7 +22,7 @@ class ObjectsServices{
         })->implode(', ');
         // dd($objective->objectTimePeriodMapping);
         $time_period = $objective->objectTimePeriodMapping ? $objective->objectTimePeriodMapping->year . ' ' . strtoupper($objective->objectTimePeriodMapping->quarter) : '';
-        switch($objective->objectTimePeriodMapping->quarter){
+        switch($objective->objectTimePeriodMapping?->quarter){
             case 'q1':
                 $duration = 'Jan 1 - Mar 31'; 
                 break;
@@ -68,11 +68,11 @@ class ObjectsServices{
         $object = Objects::create([
             "object_name"=>$request->name,
             "object_type"=>$request->is_private == True? 'user':'department',
-            "object_description"=>$request->description,
+            "object_description"=>$request->description == null? '':$request->description,
             "object_status"=>'active',
             "object_visibility"=>$request->visibility,
             "created_by"=>$request->user['user_id'],
-            "department_id"=>$request->department,  
+            "department_id"=>$request->user['department_id'],  
         ]);
         $objectCategoryMapping = ObjectCategoryMapping::create([
             "object_id"=>$object->id,
@@ -83,10 +83,13 @@ class ObjectsServices{
             case 'department':
                 $objectDepartmentMapping = ObjectDepartmentMapping::create([
                     "object_id"=>$object->id,
-                    "department_id"=>$request->department
+                    "department_id"=>$request->user['department_id']
                 ]);
                 break;
             case 'accesslist':
+                if ($request->access_list == null){
+                    break;
+                }
                 foreach($request->access_list as $access_list){
                     $objectVisibilityListMapping = ObjectVisibilityListMapping::create([
                         "object_id"=>$object->id,
@@ -96,6 +99,10 @@ class ObjectsServices{
                 break;
         }
         if ($request->owners != []){
+            $objectOwnerMapping = ObjectownerMapping::create([
+                "object_id"=>$object->id,
+                "owner_id"=>$request->user['user_id']
+            ]);
             foreach($request->owners as $owner){
                 $objectOwnerMapping = ObjectownerMapping::create([
                     "object_id"=>$object->id,
@@ -103,8 +110,16 @@ class ObjectsServices{
                 ]);
             }
         }
+        else{
+            $objectOwnerMapping = ObjectownerMapping::create([
+                "object_id"=>$object->id,
+                "owner_id"=>$request->user['user_id']
+            ]);
+        }
         if ($request->tags != []){
+            
             foreach($request->tags as $tag){
+                info($tag); 
                 $objectTagMapping = ObjectTagMapping::create([
                     "object_id"=>$object->id,
                     "tag_id"=>$tag
